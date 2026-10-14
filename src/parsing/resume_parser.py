@@ -58,6 +58,43 @@ class CandidateProfile(BaseModel):
         )
 
 
+def redact_profile_pii(profile: CandidateProfile, anonymize_name: bool = False) -> CandidateProfile:
+    """
+    Redacts Personally Identifiable Information (PII) to prevent sensitive candidate
+    contact data from being exposed on screen or to external viewers.
+    """
+    masked_email = ""
+    if profile.email:
+        parts = profile.email.split("@")
+        if len(parts) == 2:
+            user, domain = parts
+            masked_email = f"{user[0]}***{user[-1] if len(user) > 1 else ''}@{domain}"
+        else:
+            masked_email = "***@***.com"
+
+    masked_phone = ""
+    if profile.phone:
+        digits = re.sub(r"\D", "", profile.phone)
+        if len(digits) >= 4:
+            masked_phone = f"(***) ***-{digits[-4:]}"
+        else:
+            masked_phone = "***-***-****"
+
+    masked_location = "[Location Redacted for Privacy]" if profile.location else ""
+    masked_name = profile.name
+    if anonymize_name:
+        import hashlib
+        short_hash = hashlib.md5(profile.name.encode()).hexdigest()[:4].upper()
+        masked_name = f"Candidate #{short_hash}"
+
+    return profile.model_copy(update={
+        "name": masked_name,
+        "email": masked_email,
+        "phone": masked_phone,
+        "location": masked_location
+    })
+
+
 # ==========================================
 # 2. Mock Fallback Parser (For Testing without API Key)
 # ==========================================
