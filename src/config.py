@@ -17,6 +17,16 @@ if ENV_FILE.exists():
 else:
     load_dotenv()
 
+# Streamlit Community Cloud Secrets Synchronization
+try:
+    import streamlit as st
+    if hasattr(st, "secrets"):
+        for secret_key in ["GEMINI_API_KEY", "GOOGLE_API_KEY", "LLM_MODEL", "EMBEDDING_MODEL"]:
+            if secret_key in st.secrets and not os.getenv(secret_key):
+                os.environ[secret_key] = str(st.secrets[secret_key])
+except Exception:
+    pass
+
 # API Keys
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or ""
 # Ensure GOOGLE_API_KEY environment variable is set for langchain-google-genai
