@@ -324,21 +324,48 @@ with st.sidebar:
     st.markdown("---")
     st.subheader("🔑 Enterprise LLM Gateway")
 
-    # Masked API Key Input - Security Best Practice
-    api_key_input = st.text_input(
-        "Google Gemini API Key",
-        value=GEMINI_API_KEY if GEMINI_API_KEY else "",
-        type="password",
-        help="Keys are isolated in memory and never transmitted to untrusted endpoints."
-    )
-    if api_key_input and api_key_input != os.environ.get("GEMINI_API_KEY"):
-        os.environ["GEMINI_API_KEY"] = api_key_input
-        os.environ["GOOGLE_API_KEY"] = api_key_input
+    # High Security: Never expose or prefill active API keys in HTML DOM
+    is_key_active = check_api_key()
 
-    if check_api_key():
-        st.markdown('<span class="badge-pill badge-green">🔒 Gemini API Gateway Active</span>', unsafe_allow_html=True)
+    if is_key_active:
+        st.markdown("""
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px;">
+            <div style="color: #6ee7b7; font-weight: 700; font-size: 0.85rem;">🔒 Server-Side Key Active</div>
+            <div style="color: #94a3b8; font-size: 0.78rem; margin-top: 2px;">Key is isolated in secure backend memory. Hidden from client browsers.</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        with st.expander("⚙️ Override API Key (Optional)"):
+            api_key_input = st.text_input(
+                "Enter New Key",
+                value="",
+                type="password",
+                placeholder="Paste new Gemini key...",
+                help="Overrides backend key for current session only."
+            )
+            if api_key_input:
+                os.environ["GEMINI_API_KEY"] = api_key_input
+                os.environ["GOOGLE_API_KEY"] = api_key_input
+                st.success("New session key applied!")
     else:
-        st.markdown('<span class="badge-pill badge-amber">⚙️ Local Deterministic Heuristics</span>', unsafe_allow_html=True)
+        st.markdown("""
+        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px;">
+            <div style="color: #fcd34d; font-weight: 700; font-size: 0.85rem;">⚙️ Local Heuristics Active</div>
+            <div style="color: #94a3b8; font-size: 0.78rem; margin-top: 2px;">Running offline. Enter a key below to enable dynamic Gemini LLM generation.</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        api_key_input = st.text_input(
+            "Google Gemini API Key",
+            value="",
+            type="password",
+            placeholder="AIzaSy...",
+            help="Your key remains in your local browser session and is never saved publicly."
+        )
+        if api_key_input:
+            os.environ["GEMINI_API_KEY"] = api_key_input
+            os.environ["GOOGLE_API_KEY"] = api_key_input
+            st.rerun()
 
     model_choice = st.selectbox(
         "LLM Engine",
