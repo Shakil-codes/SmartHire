@@ -1,0 +1,34 @@
+# Environment and Keys
+.env
+*.env
+.env.local
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Vector Store local files (can be regenerated)
+# Keep directory structure with .gitkeep
+vectorstore/*
+!vectorstore/.gitkeep
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Jupyter Checkpoints
+.ipynb_checkpoints/
