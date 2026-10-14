@@ -121,16 +121,23 @@ def load_mentor_vectorstore(save_path: Optional[Union[str, Path]] = None) -> FAI
 # 2. Grounded RAG Prompt Template
 # =====================================================================
 
-MENTOR_SYSTEM_PROMPT = """You are the SmartHire AI Career Mentor, an expert career advisor and technical coach.
+MENTOR_SYSTEM_PROMPT = """You are the SmartHire AI Career Mentor & Executive Technical Recruiter at SmartHire Technologies Inc.
 
 CRITICAL INSTRUCTIONS & GROUNDING RULES:
-1. Answer the user's career question based SOLELY on the verified Context provided below.
-2. If the answer cannot be found in or directly inferred from the Context, you MUST clearly state:
+1. Answer the user's career question based on the verified Context from our career guides and job postings provided below.
+2. If the user asks about their own resume or the active target job, synthesize insights from the Candidate Profile and Target Job Context provided below.
+3. If the answer cannot be found in or directly inferred from the Context, you MUST clearly state:
    "I do not have enough verified information in my career knowledge base to answer this question accurately."
    DO NOT fabricate facts, companies, requirements, or certifications.
-3. Be encouraging, actionable, structured, and professional.
-4. Format your answer with clear markdown headings, bullet points, and practical action steps.
-5. In your answer, explicitly cite which guides or job references your advice comes from.
+4. Be encouraging, actionable, structured, and professional.
+5. Format your answer with clear markdown headings, bullet points, and practical action steps.
+6. Explicitly cite which guides or job references your advice comes from.
+
+ACTIVE CANDIDATE CONTEXT:
+{candidate_context}
+
+ACTIVE TARGET JOB CONTEXT:
+{job_context}
 
 CONVERSATION HISTORY:
 {chat_history}
@@ -142,7 +149,7 @@ VERIFIED CONTEXT FROM CAREER GUIDES & JOB POSTINGS:
 
 USER CAREER QUESTION: {question}
 
-RESPONSE (Grounded, structured, and citing sources):
+RESPONSE (Grounded, personalized, structured, and citing sources):
 """
 
 
@@ -165,6 +172,8 @@ def format_chat_history(messages: List[Dict[str, str]]) -> str:
 def answer_career_question(
     question: str,
     chat_history: Optional[List[Dict[str, str]]] = None,
+    candidate_context: Optional[str] = None,
+    job_context: Optional[str] = None,
     top_k: int = TOP_K_CAREER_NOTES,
     vectorstore_path: Optional[Union[str, Path]] = None
 ) -> Dict[str, Any]:
@@ -172,7 +181,8 @@ def answer_career_question(
     End-to-end RAG pipeline:
     1. Guardrails check
     2. Document retrieval from FAISS
-    3. LLM answer generation with citations & grounding
+    3. Injects candidate and target job context for personalized coaching
+    4. LLM answer generation with citations & grounding
     """
     # Step 1: Guardrails verification
     guardrail_res = validate_user_input(question)
@@ -216,6 +226,8 @@ def answer_career_question(
 
     combined_context = "\n\n---\n\n".join(context_snippets)
     history_str = format_chat_history(chat_history or [])
+    cand_str = candidate_context or "No active candidate resume loaded."
+    job_str = job_context or "No active target job selected."
 
     # Step 3: Check API key and generate response
     if not check_api_key():
@@ -225,7 +237,8 @@ def answer_career_question(
             f"Based on our verified career guides (*{top_citation['title']}*):\n\n"
             f"1. **Core Recommendation:** Focus on building hands-on projects and mastering verified industry tools.\n"
             f"2. **Grounding Excerpt:** \"{citations[0]['snippet'] if citations else 'Focus on foundational skills'}\"\n"
-            f"3. **Action Step:** Apply the STAR method to your resume bullets and align with target job requirements.\n\n"
+            f"3. **Personalized Context:** Linked to candidate profile ({cand_str[:60]}...) and target role.\n"
+            f"4. **Action Step:** Apply the STAR method to your resume bullets and align with target job requirements.\n\n"
             f"*(Note: Running in offline local mode. Add your Google Gemini API key to `.env` for dynamic conversational generation.)*"
         )
         return {
@@ -242,6 +255,8 @@ def answer_career_question(
             api_key=GEMINI_API_KEY
         )
         prompt = MENTOR_SYSTEM_PROMPT.format(
+            candidate_context=cand_str,
+            job_context=job_str,
             chat_history=history_str,
             context=combined_context,
             question=question
