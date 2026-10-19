@@ -128,7 +128,9 @@ st.markdown("""
         border: 1px solid transparent !important;
         margin: 0 !important;
     }
-    section[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
+    section[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child,
+    section[data-testid="stSidebar"] div[role="radiogroup"] label input,
+    section[data-testid="stSidebar"] div[role="radiogroup"] label svg {
         display: none !important;
     }
     section[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
@@ -144,6 +146,18 @@ st.markdown("""
     section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) span,
     section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) div {
         color: #ffffff !important;
+    }
+
+    /* Primary button matching reference app dark slate */
+    button[data-testid="baseButton-primary"] {
+        background-color: #1e293b !important;
+        border-color: #1e293b !important;
+        color: #ffffff !important;
+        border-radius: 8px !important;
+    }
+    button[data-testid="baseButton-primary"]:hover {
+        background-color: #0f172a !important;
+        border-color: #0f172a !important;
     }
 
     /* Workflow Status Box in Sidebar */
