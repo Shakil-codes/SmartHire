@@ -1,12 +1,12 @@
 """
-SmartHire Technologies Inc. — Enterprise Career & Talent Intelligence Platform
-An enterprise-grade platform offering:
-- Autonomous AI Career Mentor Co-Pilot with multi-turn memory & context awareness
-- PII Masking & Blind Screening (GDPR/SOC2 privacy compliance)
-- Semantic Vector Job Matching (FAISS)
-- Google XYZ CV Optimization & Tailored Resume Studio
-- Dual-Model Embedding Benchmarking Lab
-- Enterprise Solutions & Platform Help Center
+SmartHire Technologies — AI-Powered Career Intelligence Platform
+Reference benchmark workflow:
+- ⊞ Overview: 5-step workflow progress track, career workflow cards, instant sample loaders
+- 👤 Profile: Document ingestion (PDF/DOCX), structured profile verification, PII redaction
+- 💼 Jobs: Semantic FAISS vector job matching, Kaggle corpus, match scores, gating guards
+- 📄 Resume Studio: Target role alignment, Google XYZ impact formula rewrites, tailored resume export
+- 💬 Career Mentor: Conversational AI coaching with multi-turn memory & grounded citations
+- 🔬 Model Lab: Stretch Goal 4 dual-model embedding benchmarking & capstone evaluation
 """
 
 import sys
@@ -50,200 +50,345 @@ from src.safety.guardrails import validate_user_input
 
 
 # =====================================================================
-# 1. Page Configuration & Enterprise Styling
+# 1. Page Configuration & Aesthetic SaaS Styling
 # =====================================================================
 st.set_page_config(
-    page_title="SmartHire Technologies · Enterprise Career & Talent AI",
+    page_title="SmartHire · Career Intelligence",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom High-Aesthetic Enterprise CSS
+# Custom High-Aesthetic SaaS CSS matching Reference App
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
     :root {
-        --brand-primary: #6366f1;
-        --brand-violet: #8b5cf6;
-        --brand-emerald: #10b981;
-        --dark-bg: #090d16;
-        --card-bg: rgba(17, 24, 39, 0.7);
-        --border-glass: rgba(255, 255, 255, 0.08);
+        --primary-blue: #1d4ed8;
+        --primary-blue-hover: #1e40af;
+        --brand-accent: #2563eb;
+        --bg-main: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #64748b;
     }
 
     html, body, [class*="css"] {
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #0f172a;
     }
 
-    /* Top Enterprise Navigation Bar */
-    .company-nav {
-        background: rgba(15, 23, 42, 0.85);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 18px;
-        padding: 14px 28px;
-        margin-bottom: 22px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    /* Streamlit Main Container styling */
+    .stApp {
+        background-color: #f8fafc;
     }
-    .brand-mark {
+
+    /* Sidebar Brand Styling */
+    .sidebar-brand-title {
         font-size: 1.35rem;
         font-weight: 800;
         letter-spacing: -0.02em;
-        background: linear-gradient(120deg, #ffffff 40%, #a5b4fc 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        color: #0f172a;
+        margin: 0;
+        line-height: 1.2;
     }
-    .status-badge {
+    .sidebar-brand-sub {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        color: #2563eb;
+        text-transform: uppercase;
+        margin-top: 4px;
+        margin-bottom: 18px;
+    }
+    .sidebar-section-title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-top: 14px;
+        margin-bottom: 8px;
+    }
+
+    /* Clean Radio Group Styling for Sidebar Navigation */
+    section[data-testid="stSidebar"] div[role="radiogroup"] {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    section[data-testid="stSidebar"] div[role="radiogroup"] label {
+        padding: 8px 14px !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+        border: 1px solid transparent !important;
+        margin: 0 !important;
+    }
+    section[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
+        display: none !important;
+    }
+    section[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+        background-color: #f1f5f9 !important;
+    }
+    section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
+        background-color: #1d4ed8 !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        border-color: #1d4ed8 !important;
+    }
+    section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p,
+    section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) span,
+    section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) div {
+        color: #ffffff !important;
+    }
+
+    /* Workflow Status Box in Sidebar */
+    .sidebar-status-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px;
+        margin-top: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .status-capsule {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: rgba(16, 185, 129, 0.12);
-        color: #34d399;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 600;
-        padding: 4px 12px;
+        padding: 3px 10px;
         border-radius: 9999px;
-        border: 1px solid rgba(16, 185, 129, 0.3);
+        margin-bottom: 10px;
+    }
+    .status-capsule-pending {
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+    }
+    .status-capsule-active {
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
     }
 
-    /* Enterprise Hero Banner */
-    .hero-banner {
-        background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.22) 0%, transparent 45%),
-                    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.18) 0%, transparent 45%),
-                    linear-gradient(135deg, #0b0f19 0%, #1e1b4b 60%, #090d16 100%);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 20px;
-        padding: 32px 38px;
-        margin-bottom: 24px;
-        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    /* Workflow Progress Step Cards */
+    .step-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px;
+        position: relative;
+        min-height: 110px;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
-    .hero-title {
-        font-size: 2.3rem;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        margin: 0;
-        background: linear-gradient(120deg, #ffffff 30%, #c7d2fe 70%, #e0e7ff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    .step-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
     }
-    .hero-subtitle {
+    .step-card-active {
+        border: 1.5px solid #2563eb;
+        background: #ffffff;
+        box-shadow: 0 4px 12px -2px rgba(37,99,235,0.12);
+    }
+    .step-num {
         font-size: 1.05rem;
-        color: #cbd5e1;
+        font-weight: 800;
+        color: #1e293b;
+    }
+    .step-num-active {
+        color: #2563eb;
+    }
+    .step-badge {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 9999px;
+    }
+    .step-badge-current {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+    }
+    .step-badge-locked {
+        background: #f8fafc;
+        color: #94a3b8;
+        border: 1px solid #e2e8f0;
+    }
+    .step-badge-done {
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+    }
+    .step-badge-ready {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+    }
+    .step-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
         margin-top: 8px;
-        margin-bottom: 12px;
-        max-width: 850px;
-        line-height: 1.6;
+        margin-bottom: 2px;
+    }
+    .step-sub {
+        font-size: 0.8rem;
+        color: #64748b;
     }
 
-    /* Glass Panels */
-    .glass-panel {
-        background: rgba(15, 23, 42, 0.65);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 22px 26px;
-        margin-bottom: 20px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
-        transition: transform 0.2s ease, border-color 0.2s ease;
+    /* 3-Column Career Workflow Action Cards */
+    .action-workflow-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 210px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        transition: transform 0.15s ease, border-color 0.15s ease;
     }
-    .glass-panel:hover {
-        border-color: rgba(99, 102, 241, 0.35);
+    .action-workflow-card:hover {
+        border-color: #cbd5e1;
         transform: translateY(-2px);
     }
-
-    /* Enterprise Metric Card */
-    .metric-card {
-        background: linear-gradient(180deg, rgba(30, 41, 59, 0.45) 0%, rgba(15, 23, 42, 0.65) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 14px;
-        padding: 16px 20px;
-        text-align: left;
-    }
-    .metric-title {
-        font-size: 0.8rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #94a3b8;
-    }
-    .metric-value {
-        font-size: 1.8rem;
+    .card-tracker {
+        font-size: 0.72rem;
         font-weight: 800;
-        margin-top: 4px;
-        color: #f8fafc;
+        letter-spacing: 0.08em;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 8px;
     }
-    .metric-delta {
-        font-size: 0.82rem;
-        color: #34d399;
-        font-weight: 600;
-        margin-top: 2px;
+    .card-heading {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0 0 8px 0;
+    }
+    .card-body-text {
+        font-size: 0.88rem;
+        color: #475569;
+        line-height: 1.55;
+        margin-bottom: 18px;
     }
 
-    /* Pill Badges */
-    .badge-pill {
-        display: inline-block;
+    /* Gating Action Needed Card */
+    .gating-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 26px;
+        margin-top: 14px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .badge-action-needed {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #d97706;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        padding: 3px 10px;
+        border-radius: 9999px;
+        margin-bottom: 12px;
+    }
+
+    /* Clean Job Cards */
+    .job-listing-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 20px 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        transition: border-color 0.15s ease;
+    }
+    .job-listing-card:hover {
+        border-color: #93c5fd;
+    }
+    .match-pill-high {
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+        font-size: 0.88rem;
+        font-weight: 800;
         padding: 4px 12px;
         border-radius: 9999px;
-        font-size: 0.82rem;
-        font-weight: 600;
-        margin: 3px;
-        background: rgba(99, 102, 241, 0.14);
-        color: #a5b4fc;
-        border: 1px solid rgba(99, 102, 241, 0.28);
     }
-    .badge-green {
-        background: rgba(16, 185, 129, 0.14);
-        color: #6ee7b7;
-        border: 1px solid rgba(16, 185, 129, 0.28);
-    }
-    .badge-amber {
-        background: rgba(245, 158, 11, 0.14);
-        color: #fcd34d;
-        border: 1px solid rgba(245, 158, 11, 0.28);
-    }
-
-    /* Match Score Badges */
-    .score-badge-high {
-        background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-        border: 1px solid #10b981;
-        color: #6ee7b7;
-        font-size: 1.15rem;
-        font-weight: 800;
-        padding: 6px 14px;
-        border-radius: 12px;
-        display: inline-block;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-    }
-    .score-badge-mid {
-        background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-        border: 1px solid #6366f1;
-        color: #c7d2fe;
-        font-size: 1.15rem;
-        font-weight: 800;
-        padding: 6px 14px;
-        border-radius: 12px;
-        display: inline-block;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-    }
-
-    /* Citation Box */
-    .citation-card {
-        background: rgba(255, 255, 255, 0.02);
-        border-left: 3px solid #8b5cf6;
-        padding: 10px 14px;
-        border-radius: 0 8px 8px 0;
-        margin: 6px 0;
+    .match-pill-mid {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
         font-size: 0.88rem;
+        font-weight: 800;
+        padding: 4px 12px;
+        border-radius: 9999px;
+    }
+
+    /* Competency Tags */
+    .skill-tag {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 9999px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin: 2px 4px 2px 0;
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #dbeafe;
+    }
+    .skill-tag-match {
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+    }
+    .skill-tag-missing {
+        background: #fffbeb;
+        color: #b45309;
+        border: 1px solid #fde68a;
+    }
+
+    /* Google XYZ Box */
+    .xyz-critique-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+
+    /* Citation Box in Chat */
+    .mentor-citation-box {
+        background: #f8fafc;
+        border-left: 3px solid #2563eb;
+        padding: 8px 12px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 6px;
+        margin-bottom: 6px;
+        font-size: 0.82rem;
+    }
+
+    /* Buttons override */
+    div.stButton > button:first-child {
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        transition: all 0.15s ease;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -252,6 +397,9 @@ st.markdown("""
 # =====================================================================
 # 2. Session State Initialization
 # =====================================================================
+if "active_tab" not in st.session_state:
+    st.session_state.active_tab = "Overview"
+
 if "current_profile" not in st.session_state:
     st.session_state.current_profile = None
 
@@ -281,104 +429,136 @@ if "mentor_chat_history" not in st.session_state:
         {
             "role": "assistant",
             "content": (
-                "👋 Hello! I am your **SmartHire AI Career Mentor & Co-Pilot**.\n\n"
+                "👋 Hello! I am your **SmartHire AI Career Mentor**.\n\n"
                 "I am fully synchronized with your active resume and selected target job. "
                 "I maintain memory of our session and ground my guidance in verified career roadmaps and real market requirements.\n\n"
                 "**Ask me anything:**\n"
                 "- *'Explain my match score for my active job'* \n"
                 "- *'What are the key skill gaps I need to fix?'*\n"
-                "- *'Coach me for the interview with Quantiva Analytics'* \n"
-                "- *'How do I transition from Full Stack to Machine Learning?'*"
+                "- *'Coach me for the interview with this company'* \n"
+                "- *'How do I transition to Generative AI Engineer?'*"
             ),
             "citations": []
         }
     ]
 
 
+# Helper to navigate between pages
+def navigate_to(page_name: str):
+    st.session_state.active_tab = page_name
+    st.rerun()
+
+
 # =====================================================================
-# 3. Sidebar: Enterprise Controls & Candidate Selectors
+# 3. Sidebar: Brand, Navigation & Workflow Status
 # =====================================================================
 with st.sidebar:
-    st.image("https://img.icons8.com/fluency/96/artificial-intelligence.png", width=56)
-    st.title("SmartHire Platform")
-    st.caption("Enterprise Talent & Career AI · v2.4")
+    st.markdown("""
+    <div>
+        <div class="sidebar-brand-title">SMART HIRE</div>
+        <div class="sidebar-brand-sub">CAREER INTELLIGENCE</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.subheader("🛡️ Privacy & Compliance Shield")
-    st.caption("GDPR & SOC2 Blind Screening controls:")
+    st.markdown('<div class="sidebar-section-title">WORKSPACE</div>', unsafe_allow_html=True)
 
-    mask_pii = st.toggle(
-        "Mask Contact Info (Email & Phone)",
-        value=st.session_state.pii_masking_enabled,
-        help="Protects sensitive personal data by redacting emails, phone numbers, and physical addresses."
+    nav_options = [
+        "⊞ Overview",
+        "👤 Profile",
+        "💼 Jobs",
+        "📄 Resume Studio",
+        "💬 Career Mentor",
+        "🔬 Model Lab"
+    ]
+    nav_keys = {
+        "⊞ Overview": "Overview",
+        "👤 Profile": "Profile",
+        "💼 Jobs": "Jobs",
+        "📄 Resume Studio": "Resume Studio",
+        "💬 Career Mentor": "Career Mentor",
+        "🔬 Model Lab": "Model Lab"
+    }
+    rev_keys = {v: k for k, v in nav_keys.items()}
+
+    current_idx = 0
+    if st.session_state.active_tab in rev_keys:
+        current_idx = nav_options.index(rev_keys[st.session_state.active_tab])
+
+    selected_nav = st.radio(
+        label="Workspace Navigation",
+        options=nav_options,
+        index=current_idx,
+        label_visibility="collapsed"
     )
-    st.session_state.pii_masking_enabled = mask_pii
+    new_tab = nav_keys[selected_nav]
+    if new_tab != st.session_state.active_tab:
+        st.session_state.active_tab = new_tab
+        st.rerun()
 
-    anon_name = st.checkbox(
-        "Blind Screening (Anonymize Name)",
-        value=st.session_state.anonymize_candidate_name,
-        help="Replaces candidate full name with an anonymous token (e.g. Candidate #4C2A) to eliminate unconscious bias."
+    # Workflow Status Widget
+    st.markdown('<div class="sidebar-section-title">WORKFLOW STATUS</div>', unsafe_allow_html=True)
+
+    has_resume = st.session_state.raw_profile is not None
+    resume_pill_html = (
+        f'<span class="status-capsule status-capsule-active">● Active: {st.session_state.current_profile.name if st.session_state.current_profile else "Uploaded"}</span>'
+        if has_resume else
+        '<span class="status-capsule status-capsule-pending">○ No resume</span>'
     )
-    st.session_state.anonymize_candidate_name = anon_name
+    target_role_text = (
+        st.session_state.selected_job.get("title", "Not specified")
+        if st.session_state.selected_job else
+        (st.session_state.current_profile.target_role if (st.session_state.current_profile and st.session_state.current_profile.target_role) else "Not specified")
+    )
+    match_count_text = f"{len(st.session_state.matched_jobs)} roles" if st.session_state.matched_jobs else "0 roles"
 
-    st.markdown("---")
-    st.subheader("🔑 Enterprise LLM Gateway")
-
-    # High Security: Never expose or prefill active API keys in HTML DOM
-    is_key_active = check_api_key()
-
-    if is_key_active:
-        st.markdown("""
-        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px;">
-            <div style="color: #6ee7b7; font-weight: 700; font-size: 0.85rem;">🔒 Server-Side Key Active</div>
-            <div style="color: #94a3b8; font-size: 0.78rem; margin-top: 2px;">Key is isolated in secure backend memory. Hidden from client browsers.</div>
+    st.markdown(f"""
+    <div class="sidebar-status-box">
+        {resume_pill_html}
+        <div style="font-size: 0.85rem; color: #0f172a; margin-top: 4px;">
+            <b>Target:</b> <span style="color: #475569;">{target_role_text}</span>
         </div>
-        """, unsafe_allow_html=True)
+        <div style="font-size: 0.85rem; color: #0f172a; margin-top: 4px;">
+            <b>Matches:</b> <span style="color: #475569;">{match_count_text}</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-        with st.expander("⚙️ Override API Key (Optional)"):
-            api_key_input = st.text_input(
-                "Enter New Key",
-                value="",
-                type="password",
-                placeholder="Paste new Gemini key...",
-                help="Overrides backend key for current session only."
-            )
+    # Privacy & Controls Expander
+    with st.expander("🛡️ Privacy & Demo Settings", expanded=False):
+        mask_pii = st.toggle(
+            "Mask Contact PII",
+            value=st.session_state.pii_masking_enabled,
+            help="Redacts emails, phone numbers, and street addresses."
+        )
+        st.session_state.pii_masking_enabled = mask_pii
+
+        anon_name = st.checkbox(
+            "Blind Screening (Mask Name)",
+            value=st.session_state.anonymize_candidate_name,
+            help="Replaces full name with anonymous ID to remove unconscious bias."
+        )
+        st.session_state.anonymize_candidate_name = anon_name
+
+        model_choice = st.selectbox(
+            "LLM Engine",
+            ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"],
+            index=0
+        )
+
+        is_key_active = check_api_key()
+        if is_key_active:
+            st.success("🔒 Server API Key Active")
+        else:
+            api_key_input = st.text_input("Gemini API Key", type="password")
             if api_key_input:
                 os.environ["GEMINI_API_KEY"] = api_key_input
                 os.environ["GOOGLE_API_KEY"] = api_key_input
-                st.success("New session key applied!")
-    else:
-        st.markdown("""
-        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px;">
-            <div style="color: #fcd34d; font-weight: 700; font-size: 0.85rem;">⚙️ Local Heuristics Active</div>
-            <div style="color: #94a3b8; font-size: 0.78rem; margin-top: 2px;">Running offline. Enter a key below to enable dynamic Gemini LLM generation.</div>
-        </div>
-        """, unsafe_allow_html=True)
+                st.rerun()
 
-        api_key_input = st.text_input(
-            "Google Gemini API Key",
-            value="",
-            type="password",
-            placeholder="AIzaSy...",
-            help="Your key remains in your local browser session and is never saved publicly."
-        )
-        if api_key_input:
-            os.environ["GEMINI_API_KEY"] = api_key_input
-            os.environ["GOOGLE_API_KEY"] = api_key_input
-            st.rerun()
-
-    model_choice = st.selectbox(
-        "LLM Engine",
-        ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"],
-        index=0
-    )
-
-    st.markdown("---")
-    st.subheader("⚡ Quick Candidate Profiles")
-    st.caption("Load sample candidate dossiers for testing:")
-
-    col_s1, col_s2 = st.columns(2)
-    with col_s1:
+    # Quick Dossier Loaders in Sidebar
+    st.markdown('<div class="sidebar-section-title">TEST PROFILES</div>', unsafe_allow_html=True)
+    c_s1, c_s2 = st.columns(2)
+    with c_s1:
         if st.button("📊 Alex (DS)", use_container_width=True):
             path = PROJECT_ROOT / "data/resumes/resume_alex_data_scientist.pdf"
             if path.exists():
@@ -390,7 +570,7 @@ with st.sidebar:
                     st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
                     st.session_state.cv_suggestions = None
                     st.session_state.tailored_resume_content = None
-                st.toast("Loaded Alex Rivera (Data Scientist)!")
+                st.toast("Loaded Alex Rivera!")
                 st.rerun()
 
         if st.button("🌐 Sarah (FS)", use_container_width=True):
@@ -404,11 +584,11 @@ with st.sidebar:
                     st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
                     st.session_state.cv_suggestions = None
                     st.session_state.tailored_resume_content = None
-                st.toast("Loaded Sarah Chen (Full Stack Developer)!")
+                st.toast("Loaded Sarah Chen!")
                 st.rerun()
 
-    with col_s2:
-        if st.button("☁️ Rahul (DevOps)", use_container_width=True):
+    with c_s2:
+        if st.button("☁️ Rahul (Dev)", use_container_width=True):
             path = PROJECT_ROOT / "data/resumes/resume_rahul_devops_engineer.docx"
             if path.exists():
                 text = load_document(path)
@@ -419,10 +599,10 @@ with st.sidebar:
                     st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
                     st.session_state.cv_suggestions = None
                     st.session_state.tailored_resume_content = None
-                st.toast("Loaded Rahul Verma (DevOps Engineer)!")
+                st.toast("Loaded Rahul Verma!")
                 st.rerun()
 
-        if st.button("📈 Priya (Analyst)", use_container_width=True):
+        if st.button("📈 Priya (DA)", use_container_width=True):
             path = PROJECT_ROOT / "data/resumes/resume_priya_fresher_analyst.pdf"
             if path.exists():
                 text = load_document(path)
@@ -433,226 +613,361 @@ with st.sidebar:
                     st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
                     st.session_state.cv_suggestions = None
                     st.session_state.tailored_resume_content = None
-                st.toast("Loaded Priya Sharma (Junior Analyst)!")
+                st.toast("Loaded Priya Sharma!")
                 st.rerun()
 
-    st.markdown("---")
-    st.subheader("🏢 Active Co-Pilot State")
-    active_cand_name = st.session_state.current_profile.name if st.session_state.current_profile else "No resume loaded"
-    active_job_title = st.session_state.selected_job.get("title", "No job selected") if st.session_state.selected_job else "None"
-    st.markdown(f"• **Candidate:** `{active_cand_name}`")
-    st.markdown(f"• **Target Role:** `{active_job_title}`")
-    st.markdown("• **Vector Index:** `49 FAISS Chunks`")
+
+# Update current profile with active PII settings
+if st.session_state.raw_profile:
+    if st.session_state.pii_masking_enabled or st.session_state.anonymize_candidate_name:
+        st.session_state.current_profile = redact_profile_pii(
+            st.session_state.raw_profile,
+            anonymize_name=st.session_state.anonymize_candidate_name
+        )
+    else:
+        st.session_state.current_profile = st.session_state.raw_profile
 
 
 # =====================================================================
-# 4. Top Corporate Brand Ribbon
+# 4. VIEW: ⊞ OVERVIEW
 # =====================================================================
-privacy_pill = "🔒 Contact Redacted" if st.session_state.pii_masking_enabled else "⚠️ Direct Contact Mode"
-blind_pill = " · Blind Screening Active" if st.session_state.anonymize_candidate_name else ""
+if st.session_state.active_tab == "Overview":
+    has_profile = st.session_state.raw_profile is not None
 
-st.markdown(f"""
-<div class="company-nav">
-    <div class="brand-mark">
-        <span>⚡</span> <b>SmartHire Technologies</b> &nbsp;<span style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">| Enterprise Career AI</span>
-    </div>
-    <div style="display: flex; gap: 10px; align-items: center;">
-        <span class="status-badge">🟢 Core AI Systems 100% Operational</span>
-        <span class="status-badge" style="background: rgba(99, 102, 241, 0.12); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.3);">
-            {privacy_pill}{blind_pill}
+    # Step header
+    step_num = "2" if has_profile else "1"
+    st.markdown(f"""
+    <div style="margin-bottom: 24px;">
+        <span style="font-size: 0.8rem; font-weight: 700; color: #64748b; background: #ffffff; border: 1px solid #e2e8f0; padding: 4px 12px; border-radius: 9999px;">
+            ↻ Step {step_num} of 5
         </span>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-
-# =====================================================================
-# 5. Core Navigation Tabs
-# =====================================================================
-tab_company, tab_parse, tab_jobs, tab_improve, tab_agent, tab_benchmark = st.tabs([
-    "🏢 Company & Platform Help",
-    "📄 Resume Parser & Profile",
-    "🎯 Semantic Job Matching",
-    "💡 CV Optimization & Rewrite",
-    "🤖 SmartHire Co-Pilot (Chat Agent)",
-    "🔬 Model Comparison & Lab"
-])
-
-
-# ----------------------------------------------------
-# TAB 0: COMPANY OVERVIEW & COMPLETE PLATFORM HELP
-# ----------------------------------------------------
-with tab_company:
-    st.markdown("""
-    <div class="hero-banner">
-        <h1 class="hero-title">Intelligent Career & Talent Mobility Platform</h1>
-        <p class="hero-subtitle">
-            SmartHire Technologies bridges the gap between candidate qualifications and employer demand. 
-            We replace brittle keyword searching with high-dimensional vector embeddings, grounded RAG mentorship, 
-            and AI resume optimization powered by Google's XYZ impact formula.
-        </p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Executive Stats Row
-    st.markdown("### 📈 Enterprise Platform Impact")
-    col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-    with col_m1:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-title">Enterprise Cost Savings</div>
-            <div class="metric-value">$2.4M</div>
-            <div class="metric-delta">▲ 42% YoY efficiency</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_m2:
-        with st.container():
+    col_h_left, col_h_right = st.columns([3.5, 1.2])
+    with col_h_left:
+        if not has_profile:
             st.markdown("""
-            <div class="metric-card">
-                <div class="metric-title">Time to Shortlist</div>
-                <div class="metric-value">4.2 min</div>
-                <div class="metric-delta">▼ 68% faster screening</div>
-            </div>
+            <h1 style="font-size: 2.2rem; font-weight: 800; color: #0f172a; margin-top: 0; margin-bottom: 8px; letter-spacing: -0.02em;">
+                Add your resume to begin
+            </h1>
+            <p style="font-size: 1.05rem; color: #475569; line-height: 1.5; margin: 0;">
+                Upload your resume document to extract verified competencies, evaluate matching roles, and tailor applications.
+            </p>
             """, unsafe_allow_html=True)
-    with col_m3:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-title">Interview Success Rate</div>
-            <div class="metric-value">94.2%</div>
-            <div class="metric-delta">▲ with XYZ bullet rewrites</div>
+        else:
+            cand_name = st.session_state.current_profile.name if st.session_state.current_profile else "Candidate"
+            st.markdown(f"""
+            <h1 style="font-size: 2.2rem; font-weight: 800; color: #0f172a; margin-top: 0; margin-bottom: 8px; letter-spacing: -0.02em;">
+                Profile verified: {cand_name}
+            </h1>
+            <p style="font-size: 1.05rem; color: #475569; line-height: 1.5; margin: 0;">
+                Competencies extracted and {len(st.session_state.matched_jobs)} semantic job matches ready for evaluation and career coaching.
+            </p>
+            """, unsafe_allow_html=True)
+
+    with col_h_right:
+        st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+        if not has_profile:
+            if st.button("Add your resume →", type="primary", use_container_width=True):
+                navigate_to("Profile")
+        else:
+            if st.button("Explore Matching Jobs →", type="primary", use_container_width=True):
+                navigate_to("Jobs")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Workflow progress track
+    st.markdown('<h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 14px;">Workflow progress</h3>', unsafe_allow_html=True)
+
+    col_w1, col_w2, col_w3, col_w4, col_w5 = st.columns(5)
+
+    with col_w1:
+        c1_class = "step-card step-card-active" if not has_profile else "step-card"
+        c1_badge = '<span class="step-badge step-badge-current">Current</span>' if not has_profile else '<span class="step-badge step-badge-done">Done</span>'
+        c1_sub = "Pending upload" if not has_profile else "Uploaded & Verified"
+        st.markdown(f"""
+        <div class="{c1_class}">
+            <div class="step-num step-num-active">01</div>
+            {c1_badge}
+            <div class="step-title">Resume</div>
+            <div class="step-sub">{c1_sub}</div>
         </div>
         """, unsafe_allow_html=True)
-    with col_m4:
+
+    with col_w2:
+        c2_badge = '<span class="step-badge step-badge-locked">Locked</span>' if not has_profile else '<span class="step-badge step-badge-ready">Ready</span>'
+        c2_sub = "Locked" if not has_profile else "Skills Extracted"
+        st.markdown(f"""
+        <div class="step-card">
+            <div class="step-num">02</div>
+            {c2_badge}
+            <div class="step-title">Profile</div>
+            <div class="step-sub">{c2_sub}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_w3:
+        c3_badge = '<span class="step-badge step-badge-locked">Locked</span>' if not has_profile else '<span class="step-badge step-badge-ready">Ready</span>'
+        c3_sub = "Locked" if not has_profile else f"{len(st.session_state.matched_jobs)} Roles Matched"
+        st.markdown(f"""
+        <div class="step-card">
+            <div class="step-num">03</div>
+            {c3_badge}
+            <div class="step-title">Jobs</div>
+            <div class="step-sub">{c3_sub}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_w4:
+        c4_badge = '<span class="step-badge step-badge-locked">Locked</span>' if not has_profile else '<span class="step-badge step-badge-ready">Ready</span>'
+        c4_sub = "Locked" if not has_profile else "XYZ Optimization"
+        st.markdown(f"""
+        <div class="step-card">
+            <div class="step-num">04</div>
+            {c4_badge}
+            <div class="step-title">Resume Studio</div>
+            <div class="step-sub">{c4_sub}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_w5:
         st.markdown("""
-        <div class="metric-card">
-            <div class="metric-title">Privacy Compliance</div>
-            <div class="metric-value">100%</div>
-            <div class="metric-delta">SOC2 & GDPR PII Redacted</div>
+        <div class="step-card">
+            <div class="step-num">05</div>
+            <span class="step-badge step-badge-ready">Available</span>
+            <div class="step-title">Career Mentor</div>
+            <div class="step-sub">Coaching Ready</div>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("---")
 
-    # Complete App Help & How It Works
-    col_h1, col_h2 = st.columns(2)
-    with col_h1:
+    # Career workflow 3 cards
+    st.markdown('<h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 14px;">Career workflow</h3>', unsafe_allow_html=True)
+
+    col_a1, col_a2, col_a3 = st.columns(3)
+
+    with col_a1:
         st.markdown("""
-        <div class="glass-panel">
-            <h3 style="color: #f8fafc; margin-top: 0;">🧭 Platform Capabilities Guide</h3>
-            <p style="color: #cbd5e1; line-height: 1.6;">
-                SmartHire is an integrated 4-in-1 Generative AI solution designed for job seekers, recruiters, and career switchers:
-            </p>
-            <ol style="color: #cbd5e1; line-height: 1.8;">
-                <li><b>Structured Resume Extraction:</b> Parses messy PDF/DOCX resumes into clean, validated JSON schemas with zero layout failure.</li>
-                <li><b>Semantic Vector Matching:</b> Embeds job requirements and candidate profiles into 768-dimensional space with FAISS similarity ranking.</li>
-                <li><b>CV Gap Analysis & XYZ Rewrites:</b> Identifies missing keywords and converts weak bullet points using <code>Accomplished [X] as measured by [Y], by doing [Z]</code>.</li>
-                <li><b>Autonomous Career Co-Pilot:</b> Grounded RAG agent that cites verified career guides and coaches you across all application stages.</li>
-            </ol>
+        <div class="action-workflow-card">
+            <div>
+                <div class="card-tracker">01 · PROFILE</div>
+                <div class="card-heading">Review profile</div>
+                <div class="card-body-text">
+                    Ensure your skills, target role, and summary accurately represent your background before AI matching.
+                </div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
+        if st.button("Open profile →", key="btn_open_profile", use_container_width=True):
+            navigate_to("Profile")
 
-    with col_h2:
+    with col_a2:
         st.markdown("""
-        <div class="glass-panel">
-            <h3 style="color: #f8fafc; margin-top: 0;">🚀 3-Minute Quickstart Guide</h3>
-            <ul style="color: #cbd5e1; line-height: 1.8; list-style-type: none; padding-left: 0;">
-                <li><b>Step 1:</b> Select a sample candidate from the sidebar (e.g. <i>Alex - Data Science</i>) or upload your own CV in Tab 1.</li>
-                <li><b>Step 2:</b> Explore Tab 2 to view semantic job matches with percentage similarity badges. Click <b>"Select for CV Optimization"</b>.</li>
-                <li><b>Step 3:</b> Navigate to Tab 3 to review your Fit Score, XYZ bullet critiques, and generate a tailored markdown resume.</li>
-                <li><b>Step 4:</b> Head to <b>Tab 4 (Co-Pilot Agent)</b> to chat with the SmartHire Agent about your career strategy, interview questions, or match explanations!</li>
-            </ul>
+        <div class="action-workflow-card">
+            <div>
+                <div class="card-tracker">02 · MATCHING</div>
+                <div class="card-heading">Explore roles</div>
+                <div class="card-body-text">
+                    Discover positions matching your verified competencies with clear explanations of why they match.
+                </div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
+        if st.button("Explore jobs →", key="btn_explore_jobs", use_container_width=True):
+            navigate_to("Jobs")
+
+    with col_a3:
+        st.markdown("""
+        <div class="action-workflow-card">
+            <div>
+                <div class="card-tracker">03 · OPTIMIZATION</div>
+                <div class="card-heading">Improve & prepare</div>
+                <div class="card-body-text">
+                    Tailor your experience bullets for a specific position and consult the grounded career mentor.
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("Open Resume Studio →", key="btn_open_studio", use_container_width=True):
+            navigate_to("Resume Studio")
+
+    st.markdown("<br><hr style='border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;'>", unsafe_allow_html=True)
+
+    # Instant Dossier Demo Card
+    st.markdown("""
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+        <div style="font-size: 0.82rem; font-weight: 800; color: #2563eb; letter-spacing: 0.08em; text-transform: uppercase;">Instant Evaluation Demo</div>
+        <div style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-top: 4px; margin-bottom: 6px;">
+            Want to test the full pipeline in one click?
+        </div>
+        <div style="font-size: 0.88rem; color: #64748b; margin-bottom: 14px;">
+            Select a verified candidate profile below to populate structured skills, run FAISS semantic matching, and start career coaching immediately.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    cd1, cd2, cd3, cd4 = st.columns(4)
+    with cd1:
+        if st.button("📊 Load Alex (Data Scientist)", key="ov_alex", use_container_width=True):
+            path = PROJECT_ROOT / "data/resumes/resume_alex_data_scientist.pdf"
+            if path.exists():
+                text = load_document(path)
+                raw = parse_resume(text)
+                st.session_state.raw_profile = raw
+                st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
+                st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
+                st.toast("Loaded Alex Rivera!")
+                st.rerun()
+    with cd2:
+        if st.button("🌐 Load Sarah (Full Stack)", key="ov_sarah", use_container_width=True):
+            path = PROJECT_ROOT / "data/resumes/resume_sarah_fullstack_developer.pdf"
+            if path.exists():
+                text = load_document(path)
+                raw = parse_resume(text)
+                st.session_state.raw_profile = raw
+                st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
+                st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
+                st.toast("Loaded Sarah Chen!")
+                st.rerun()
+    with cd3:
+        if st.button("☁️ Load Rahul (DevOps)", key="ov_rahul", use_container_width=True):
+            path = PROJECT_ROOT / "data/resumes/resume_rahul_devops_engineer.docx"
+            if path.exists():
+                text = load_document(path)
+                raw = parse_resume(text)
+                st.session_state.raw_profile = raw
+                st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
+                st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
+                st.toast("Loaded Rahul Verma!")
+                st.rerun()
+    with cd4:
+        if st.button("📈 Load Priya (Junior Analyst)", key="ov_priya", use_container_width=True):
+            path = PROJECT_ROOT / "data/resumes/resume_priya_fresher_analyst.pdf"
+            if path.exists():
+                text = load_document(path)
+                raw = parse_resume(text)
+                st.session_state.raw_profile = raw
+                st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
+                st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
+                st.toast("Loaded Priya Sharma!")
+                st.rerun()
 
 
-# ----------------------------------------------------
-# TAB 1: RESUME PARSER & PROFILE
-# ----------------------------------------------------
-with tab_parse:
-    st.markdown("### 📤 Ingest Candidate Dossier (PDF / DOCX)")
-    st.write("Upload a candidate CV. The system loads, chunks, and extracts a validated structured JSON profile.")
+# =====================================================================
+# 5. VIEW: 👤 PROFILE
+# =====================================================================
+elif st.session_state.active_tab == "Profile":
+    st.markdown("""
+    <div style="margin-bottom: 20px;">
+        <div style="font-size: 0.75rem; font-weight: 800; color: #2563eb; letter-spacing: 0.08em; text-transform: uppercase;">PROFILE SETUP</div>
+        <h1 style="font-size: 2.1rem; font-weight: 800; color: #0f172a; margin-top: 4px; margin-bottom: 6px; letter-spacing: -0.02em;">
+            Build your verified career profile
+        </h1>
+        <p style="font-size: 1.05rem; color: #475569; margin: 0;">
+            Upload your professional resume document to extract structured competencies, verified skills, and career orientation.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Upload box container matching reference app
+    st.markdown("""
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+        <div style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Upload your resume document</div>
+        <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 18px;">
+            Our extraction engine parses competencies, verified experience, and career direction for your explicit review.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     uploaded_file = st.file_uploader(
-        "Choose resume file (PDF, DOCX)",
+        "Choose resume file (PDF, DOCX, TXT)",
         type=["pdf", "docx", "doc", "txt"],
-        help="All processing happens in-memory with strict privacy protections."
+        help="All parsing executes in-memory. Sensitive contact information is protected.",
+        label_visibility="collapsed"
     )
 
     if uploaded_file is not None:
-        if st.button("⚡ Parse Resume & Run Semantic Match", type="primary"):
-            with st.spinner("Extracting text and running structured LLM parser..."):
+        if st.button("⚡ Parse Resume & Verify Profile", type="primary", use_container_width=True):
+            with st.spinner("Extracting text and running structured profile parser..."):
                 raw_text = load_document(uploaded_file, filename=uploaded_file.name)
-                raw_p = parse_resume(raw_text, model_name=model_choice)
+                raw_p = parse_resume(raw_text)
                 st.session_state.raw_profile = raw_p
                 st.session_state.matched_jobs = search_jobs(raw_p.to_search_text(), top_k=TOP_K_JOBS)
                 st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
                 st.session_state.cv_suggestions = None
                 st.session_state.tailored_resume_content = None
-                st.success("Resume parsed and jobs matched successfully!")
+                st.toast("Profile extracted successfully!")
+                st.rerun()
 
-    # Retrieve profile with active PII redaction settings applied
-    raw_p = st.session_state.raw_profile
-    if raw_p:
-        if st.session_state.pii_masking_enabled or st.session_state.anonymize_candidate_name:
-            profile = redact_profile_pii(raw_p, anonymize_name=st.session_state.anonymize_candidate_name)
-        else:
-            profile = raw_p
+    profile = st.session_state.current_profile
+    if profile:
+        st.markdown("<hr style='border: none; border-top: 1px solid #e2e8f0; margin: 28px 0;'>", unsafe_allow_html=True)
+        st.markdown('<h3 style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-bottom: 16px;">Verified Candidate Profile</h3>', unsafe_allow_html=True)
 
-        st.session_state.current_profile = profile
-
-        st.markdown("---")
-        st.markdown("### 👤 Candidate Extracted Profile")
-
-        # Top Metric Stat Row
-        c_m1, c_m2, c_m3, c_m4 = st.columns(4)
-        with c_m1:
+        # Overview Stats
+        cp1, cp2, cp3, cp4 = st.columns(4)
+        with cp1:
             st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-title">Candidate Identity</div>
-                <div class="metric-value" style="font-size: 1.3rem;">{profile.name}</div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Candidate</div>
+                <div style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin-top: 2px;">{profile.name}</div>
             </div>
             """, unsafe_allow_html=True)
-        with c_m2:
+        with cp2:
             st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-title">Inferred Target Role</div>
-                <div class="metric-value" style="font-size: 1.2rem; color: #a5b4fc;">{profile.target_role}</div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Target Orientation</div>
+                <div style="font-size: 1.1rem; font-weight: 800; color: #2563eb; margin-top: 2px;">{profile.target_role}</div>
             </div>
             """, unsafe_allow_html=True)
-        with c_m3:
+        with cp3:
             st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-title">Experience Level</div>
-                <div class="metric-value">{profile.years_of_experience:.1f} <span style="font-size: 1rem; color: #94a3b8;">yrs</span></div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Experience</div>
+                <div style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin-top: 2px;">{profile.years_of_experience:.1f} yrs</div>
             </div>
             """, unsafe_allow_html=True)
-        with c_m4:
+        with cp4:
             st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-title">Skills Extracted</div>
-                <div class="metric-value">{len(profile.skills)}</div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
+                <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Skills Extracted</div>
+                <div style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin-top: 2px;">{len(profile.skills)} skills</div>
             </div>
             """, unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        col_info1, col_info2 = st.columns([1, 2])
-        with col_info1:
-            st.markdown("#### 🔒 Contact & Privacy Status")
-            st.markdown(f"**Email:** `{profile.email or 'Not provided'}`")
-            st.markdown(f"**Phone:** `{profile.phone or 'Not provided'}`")
-            st.markdown(f"**Location:** `{profile.location or 'Not provided'}`")
+        col_pr1, col_pr2 = st.columns([1, 2])
+        with col_pr1:
+            st.markdown("""
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px;">
+                <h4 style="margin: 0 0 10px 0; color: #0f172a;">Contact & Privacy Shield</h4>
+            """, unsafe_allow_html=True)
+            st.markdown(f"**Email:** `{profile.email or 'Redacted'}`")
+            st.markdown(f"**Phone:** `{profile.phone or 'Redacted'}`")
+            st.markdown(f"**Location:** `{profile.location or 'Not specified'}`")
             if st.session_state.pii_masking_enabled:
-                st.caption("✅ PII Redaction active: Direct contact credentials are shielded.")
+                st.caption("🔒 PII redaction active: Direct contact information is protected.")
+            st.markdown("</div>", unsafe_allow_html=True)
 
-        with col_info2:
-            st.markdown("#### 🛠️ Extracted Technical Competencies")
-            skills_html = "".join([f'<span class="badge-pill">{s}</span>' for s in profile.skills])
+        with col_pr2:
+            st.markdown("""
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px;">
+                <h4 style="margin: 0 0 10px 0; color: #0f172a;">Verified Skills</h4>
+            """, unsafe_allow_html=True)
+            skills_html = "".join([f'<span class="skill-tag">{s}</span>' for s in profile.skills])
             st.markdown(skills_html, unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-        st.markdown("#### 📝 Executive Profile Summary")
-        st.info(profile.summary)
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 18px;">
+            <h4 style="margin: 0 0 8px 0; color: #0f172a;">Executive Summary</h4>
+        """, unsafe_allow_html=True)
+        st.write(profile.summary)
+        st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown("#### 💼 Professional Experience History")
         for exp in profile.experience:
@@ -665,193 +980,338 @@ with tab_parse:
             for edu in profile.education:
                 st.markdown(f"• **{edu.degree}** — {edu.institution} {f'({edu.graduation_year})' if edu.graduation_year else ''}")
 
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("Next: Explore Matching Roles in Jobs →", type="primary"):
+            navigate_to("Jobs")
+
     else:
-        st.info("👈 Upload a resume above or click one of the quick sample buttons in the sidebar to test.")
+        st.info("👈 Upload your resume above or select a sample candidate from the sidebar to inspect the extracted profile.")
 
 
-# ----------------------------------------------------
-# TAB 2: SEMANTIC JOB MATCHING
-# ----------------------------------------------------
-with tab_jobs:
-    st.markdown("### 🎯 Semantic Job Matching (FAISS Vector Search)")
-    st.write("Positions retrieved by high-dimensional semantic similarity, not literal keyword matching.")
+# =====================================================================
+# 6. VIEW: 💼 JOBS
+# =====================================================================
+elif st.session_state.active_tab == "Jobs":
+    st.markdown("""
+    <div style="margin-bottom: 20px;">
+        <div style="font-size: 0.75rem; font-weight: 800; color: #2563eb; letter-spacing: 0.08em; text-transform: uppercase;">OPPORTUNITIES</div>
+        <h1 style="font-size: 2.1rem; font-weight: 800; color: #0f172a; margin-top: 4px; margin-bottom: 6px; letter-spacing: -0.02em;">
+            Matching opportunities
+        </h1>
+        <p style="font-size: 1.05rem; color: #475569; margin: 0 0 12px 0;">
+            Explore verified roles matched against your confirmed profile using semantic vector search.
+        </p>
+        <div style="font-size: 0.85rem; color: #64748b;">
+            🗄️ <b>Job corpus:</b> Kaggle Naukri (21,739 postings) · <b>Search:</b> Semantic FAISS Vector Index
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    matched_jobs = st.session_state.matched_jobs
-    if not matched_jobs and st.session_state.current_profile:
-        st.session_state.matched_jobs = search_jobs(st.session_state.current_profile.to_search_text(), top_k=TOP_K_JOBS)
+    has_profile = st.session_state.raw_profile is not None
+
+    if not has_profile:
+        st.markdown("""
+        <div class="gating-card">
+            <div class="badge-action-needed">● Action needed</div>
+            <div style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 6px;">
+                Candidate profile confirmation required
+            </div>
+            <div style="font-size: 0.92rem; color: #475569; margin-bottom: 20px;">
+                Semantic matching requires an approved candidate profile with verified skills and target role.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        col_g1, col_g2, col_g3 = st.columns([1.5, 1.5, 3])
+        with col_g1:
+            if st.button("Upload resume in Profile →", type="primary", use_container_width=True):
+                navigate_to("Profile")
+        with col_g2:
+            if st.button("Review profile →", use_container_width=True):
+                navigate_to("Profile")
+
+    else:
+        # Auto-compute matches if empty
+        if not st.session_state.matched_jobs:
+            st.session_state.matched_jobs = search_jobs(st.session_state.current_profile.to_search_text(), top_k=TOP_K_JOBS)
+            if st.session_state.matched_jobs and not st.session_state.selected_job:
+                st.session_state.selected_job = st.session_state.matched_jobs[0]
+
         matched_jobs = st.session_state.matched_jobs
 
-    if matched_jobs:
-        st.write(f"Top **{len(matched_jobs)}** matching positions in the corpus:")
+        # Filter bar
+        col_fl1, col_fl2 = st.columns([3, 1])
+        with col_fl1:
+            search_query = st.text_input("Filter opportunities by title, tech stack, or location", placeholder="Search e.g. 'Machine Learning', 'Remote', 'AWS'...")
+        with col_fl2:
+            min_score = st.slider("Min Match %", min_value=0, max_value=90, value=30, step=5)
 
-        for job in matched_jobs:
+        filtered_jobs = [
+            j for j in matched_jobs
+            if j.get("match_score", 0) >= min_score and (
+                not search_query or
+                search_query.lower() in j["title"].lower() or
+                search_query.lower() in j["company"].lower() or
+                search_query.lower() in j["required_skills"].lower()
+            )
+        ]
+
+        st.caption(f"Showing **{len(filtered_jobs)}** verified semantic match opportunities:")
+
+        for job in filtered_jobs:
             score = job.get("match_score", 0.0)
-            score_badge_class = "score-badge-high" if score >= 45 else "score-badge-mid"
+            score_pill_class = "match-pill-high" if score >= 50 else "match-pill-mid"
+
+            is_selected = st.session_state.selected_job and st.session_state.selected_job.get("job_id") == job.get("job_id")
+            border_style = "border: 2px solid #2563eb;" if is_selected else ""
 
             st.markdown(f"""
-            <div class="glass-panel">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div class="job-listing-card" style="{border_style}">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                     <div>
-                        <h3 style="margin: 0; color: #f8fafc; font-size: 1.35rem;">{job['title']}</h3>
-                        <p style="margin: 4px 0; color: #94a3b8; font-weight: 500;">
+                        <div style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0;">{job['title']}</div>
+                        <div style="font-size: 0.88rem; color: #64748b; margin-top: 2px;">
                             🏢 <b>{job['company']}</b> &nbsp;•&nbsp; 📍 {job['location']} &nbsp;•&nbsp; 💰 {job['salary_range']} &nbsp;•&nbsp; ⏳ {job['employment_type']}
-                        </p>
+                        </div>
                     </div>
-                    <div class="{score_badge_class}">
-                        {score}% Match
-                    </div>
+                    <div class="{score_pill_class}">{int(round(score))}% Match</div>
                 </div>
-                <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; margin-bottom: 12px;">{job['description']}</p>
-                <div style="margin-top: 8px;">
-                    <span style="font-size: 0.82rem; color: #94a3b8; font-weight: 600;">REQUIRED SKILLS:</span> 
-                    {job['required_skills']}
+                <div style="font-size: 0.92rem; color: #334155; line-height: 1.5; margin-bottom: 12px;">{job['description']}</div>
+                <div>
+                    <span style="font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Required Skills:</span>
+                    <span style="font-size: 0.82rem; color: #1e293b;"> {job['required_skills']}</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
-            col_act1, col_act2, col_act3 = st.columns([1.5, 1.5, 3])
-            with col_act1:
-                if st.button(f"🎯 Target for CV Optimization", key=f"sel_{job['job_id']}", use_container_width=True):
+            col_btn1, col_btn2, col_btn3 = st.columns([1.6, 1.6, 2.8])
+            with col_btn1:
+                if st.button("🎯 Target in Resume Studio", key=f"tgt_{job['job_id']}", use_container_width=True):
                     st.session_state.selected_job = job
                     st.session_state.cv_suggestions = None
                     st.session_state.tailored_resume_content = None
-                    st.toast(f"Selected {job['title']}! Switch to Tab 3.")
-            with col_act2:
-                if st.button(f"💬 Ask Agent About Job", key=f"chat_{job['job_id']}", use_container_width=True):
+                    st.toast(f"Targeted {job['title']}!")
+                    navigate_to("Resume Studio")
+
+            with col_btn2:
+                if st.button("💬 Ask Mentor About Role", key=f"mnt_{job['job_id']}", use_container_width=True):
                     st.session_state.selected_job = job
                     st.session_state.mentor_chat_history.append({
                         "role": "user",
-                        "content": f"Can you analyze my qualifications for {job['title']} at {job['company']} and tell me what they are looking for?"
+                        "content": f"How well do my qualifications fit the {job['title']} role at {job['company']}? What should I highlight in my interview?"
                     })
-                    st.toast(f"Loaded {job['title']} into Co-Pilot Agent! Switch to Tab 4.")
-            with col_act3:
-                st.caption(f"Job ID: {job['job_id']} · FAISS Distance: {job.get('raw_distance', 'N/A')}")
-            st.markdown("---")
+                    st.toast(f"Loaded {job['title']} into Career Mentor!")
+                    navigate_to("Career Mentor")
 
-    else:
-        st.info("Please ingest a resume in Tab 1 to discover semantic job matches.")
+            with col_btn3:
+                st.caption(f"ID: {job['job_id']} · FAISS Distance: {job.get('raw_distance', 'N/A')}")
+
+            st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
 
 
-# ----------------------------------------------------
-# TAB 3: CV OPTIMIZATION & REWRITE STUDIO
-# ----------------------------------------------------
-with tab_improve:
-    st.markdown("### 💡 Actionable CV Improvement & Google XYZ Rewrites")
-    profile = st.session_state.current_profile
-    selected_job = st.session_state.selected_job
+# =====================================================================
+# 7. VIEW: 📄 RESUME STUDIO
+# =====================================================================
+elif st.session_state.active_tab == "Resume Studio":
+    st.markdown("""
+    <div style="margin-bottom: 20px;">
+        <div style="font-size: 0.75rem; font-weight: 800; color: #2563eb; letter-spacing: 0.08em; text-transform: uppercase;">RESUME STUDIO</div>
+        <h1 style="font-size: 2.1rem; font-weight: 800; color: #0f172a; margin-top: 4px; margin-bottom: 6px; letter-spacing: -0.02em;">
+            Tailor your resume for a target role
+        </h1>
+        <p style="font-size: 1.05rem; color: #475569; margin: 0;">
+            Address role-specific skill gaps and optimize experience bullet points strictly grounded in your verified history.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    if not profile:
-        st.warning("Please upload a resume in Tab 1 first.")
-    elif not selected_job:
-        st.warning("Please select a target job from Tab 2.")
-    else:
-        st.markdown(f"""
-        <div class="glass-panel" style="border-left: 4px solid #6366f1;">
-            <h4 style="margin: 0; color: #f8fafc;">Target Position: {selected_job['title']} at {selected_job['company']}</h4>
-            <p style="margin: 4px 0; color: #94a3b8;">Location: {selected_job['location']} | Salary: {selected_job['salary_range']}</p>
+    has_profile = st.session_state.raw_profile is not None
+    if not has_profile:
+        st.markdown("""
+        <div class="gating-card">
+            <div class="badge-action-needed">● Action needed</div>
+            <div style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 6px;">
+                Candidate profile confirmation required
+            </div>
+            <div style="font-size: 0.92rem; color: #475569; margin-bottom: 20px;">
+                Resume tailoring requires an approved candidate profile with verified experience.
+            </div>
         </div>
         """, unsafe_allow_html=True)
+        col_rg1, col_rg2 = st.columns([1.5, 4])
+        with col_rg1:
+            if st.button("Upload resume in Profile →", type="primary", use_container_width=True):
+                navigate_to("Profile")
+    else:
+        profile = st.session_state.current_profile
+        selected_job = st.session_state.selected_job
 
-        if st.session_state.cv_suggestions is None:
-            if st.button("✨ Run AI Gap Analysis & XYZ Rewrites", type="primary"):
-                with st.spinner("Analyzing candidate experience against job requirements..."):
-                    res = generate_cv_improvements(profile, selected_job, model_name=model_choice)
-                    st.session_state.cv_suggestions = res
-                    st.rerun()
-
-        suggestions = st.session_state.cv_suggestions
-        if suggestions:
-            # Fit Score & Skills Overlap
-            col_fit1, col_fit2 = st.columns([1, 2])
-            with col_fit1:
-                st.markdown(f"""
-                <div class="metric-card">
-                    <div class="metric-title">Estimated Role Fit Score</div>
-                    <div class="metric-value" style="color: #6ee7b7;">{suggestions.overall_fit_score}%</div>
-                </div>
-                """, unsafe_allow_html=True)
-                st.progress(suggestions.overall_fit_score / 100.0)
-
-            with col_fit2:
-                st.markdown("#### 🎯 Skill Overlap Breakdown")
-                st.markdown("**Existing Strengths:** " + "".join([f'<span class="badge-pill badge-green">✓ {s}</span>' for s in suggestions.matching_skills]), unsafe_allow_html=True)
-                st.markdown("**Critical Gaps to Address:** " + "".join([f'<span class="badge-pill badge-amber">+ {s}</span>' for s in suggestions.missing_hard_skills]), unsafe_allow_html=True)
-
-            st.markdown("---")
-            st.markdown("### 🔍 Bullet Point Critiques & Google XYZ Transformations")
-            st.caption("Google XYZ Formula: 'Accomplished [X] as measured by [Y], by doing [Z]'")
-
-            for idx, critique in enumerate(suggestions.bullet_point_improvements, 1):
-                st.markdown(f"""
-                <div class="glass-panel">
-                    <div style="color: #ef4444; font-weight: 600; margin-bottom: 4px;">❌ ORIGINAL BULLET:</div>
-                    <div style="background: rgba(239, 68, 68, 0.08); border-left: 3px solid #ef4444; padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 12px; font-size: 0.95rem;">
-                        "{critique.original_bullet}"
-                    </div>
-                    <div style="color: #f59e0b; font-weight: 600; margin-bottom: 4px;">⚠️ RECRUITER CRITIQUE:</div>
-                    <div style="color: #cbd5e1; margin-bottom: 12px; font-size: 0.92rem;">
-                        {critique.critique_weakness}
-                    </div>
-                    <div style="color: #10b981; font-weight: 600; margin-bottom: 4px;">✅ GOOGLE XYZ IMPACT REWRITE:</div>
-                    <div style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981; padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 0.95rem; font-weight: 500; color: #6ee7b7;">
-                        {critique.rewritten_bullet_with_metrics}
+        if not selected_job:
+            st.warning("Please select a target job from the Jobs tab to begin tailoring.")
+            if st.button("Browse Matching Opportunities in Jobs →", type="primary"):
+                navigate_to("Jobs")
+        else:
+            # Active Target Role Header Box
+            st.markdown(f"""
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #2563eb; border-radius: 12px; padding: 18px 22px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 0.72rem; font-weight: 700; color: #2563eb; text-transform: uppercase;">Target Opportunity</div>
+                        <div style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-top: 2px;">{selected_job['title']}</div>
+                        <div style="font-size: 0.88rem; color: #64748b; margin-top: 2px;">🏢 {selected_job['company']} &nbsp;•&nbsp; 📍 {selected_job['location']} &nbsp;•&nbsp; 💰 {selected_job['salary_range']}</div>
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
+            </div>
+            """, unsafe_allow_html=True)
 
-            st.markdown("---")
-            st.markdown("### 📝 Tailored Executive Summary")
-            st.info(suggestions.tailored_summary)
+            if st.session_state.cv_suggestions is None:
+                if st.button("✨ Run AI Gap Analysis & Google XYZ Optimization", type="primary"):
+                    with st.spinner("Analyzing candidate experience against job requirements..."):
+                        res = generate_cv_improvements(profile, selected_job)
+                        st.session_state.cv_suggestions = res
+                        st.rerun()
 
-            st.markdown("### 🎙️ Strategic Interview Preparation")
-            for tp in suggestions.interview_talking_points:
-                st.markdown(f"• 🗣️ **Interview Strategy:** {tp}")
+            suggestions = st.session_state.cv_suggestions
+            if suggestions:
+                # Fit Score & Skills Overlap
+                col_ft1, col_ft2 = st.columns([1, 2])
+                with col_ft1:
+                    st.markdown(f"""
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; text-align: center;">
+                        <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Role Alignment Score</div>
+                        <div style="font-size: 2.2rem; font-weight: 800; color: #059669; margin: 6px 0;">{suggestions.overall_fit_score}%</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.progress(suggestions.overall_fit_score / 100.0)
 
-            # Stretch Goal 3: Full Resume Tailored Rewrite
-            st.markdown("---")
-            st.markdown("### 🚀 Stretch Goal 3: Complete Tailored Resume Studio")
-            st.write("Generate a complete, ATS-optimized version of the candidate's resume specifically customized for this position.")
+                with col_ft2:
+                    st.markdown("""
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px;">
+                        <h4 style="margin: 0 0 10px 0; color: #0f172a;">Competency Breakdown</h4>
+                    """, unsafe_allow_html=True)
+                    match_tags = "".join([f'<span class="skill-tag skill-tag-match">✓ {s}</span>' for s in suggestions.matching_skills])
+                    miss_tags = "".join([f'<span class="skill-tag skill-tag-missing">+ {s}</span>' for s in suggestions.missing_hard_skills])
+                    st.markdown(f"**Verified Strengths:**<br/>{match_tags}", unsafe_allow_html=True)
+                    st.markdown(f"<div style='margin-top: 8px;'><b>Critical Gaps to Address:</b><br/>{miss_tags}</div>", unsafe_allow_html=True)
+                    st.markdown("</div>", unsafe_allow_html=True)
 
-            if st.button("📄 Generate Full Tailored Resume (.md)"):
-                with st.spinner("Rewriting complete resume with tailored ATS keywords..."):
-                    tailored_md = rewrite_tailored_resume(profile, selected_job, model_name=model_choice)
-                    st.session_state.tailored_resume_content = tailored_md
+                st.markdown("<hr style='border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;'>", unsafe_allow_html=True)
 
-            if st.session_state.tailored_resume_content:
-                col_res1, col_res2 = st.columns(2)
-                with col_res1:
-                    st.markdown("#### 📄 Original Resume Preview")
-                    st.text_area("Original Content", profile.to_search_text(), height=360, disabled=True)
-                with col_res2:
-                    st.markdown("#### ✨ AI-Tailored Resume")
-                    st.text_area("Tailored Markdown Resume", st.session_state.tailored_resume_content, height=360)
+                # Google XYZ Formula Bullet Critiques
+                st.markdown('<h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Experience Bullet Optimization</h3>', unsafe_allow_html=True)
+                st.caption("Google XYZ Impact Formula: 'Accomplished [X] as measured by [Y], by doing [Z]'")
 
-                st.download_button(
-                    label="💾 Download Tailored Resume (.md)",
-                    data=st.session_state.tailored_resume_content,
-                    file_name=f"tailored_resume_{selected_job.get('title', 'job').replace(' ', '_').lower()}.md",
-                    mime="text/markdown"
-                )
+                for idx, critique in enumerate(suggestions.bullet_point_improvements, 1):
+                    st.markdown(f"""
+                    <div class="xyz-critique-box">
+                        <div style="color: #dc2626; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">❌ Original Experience Bullet:</div>
+                        <div style="background: #fef2f2; border-left: 3px solid #dc2626; padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 12px; font-size: 0.92rem; color: #1e293b;">
+                            "{critique.original_bullet}"
+                        </div>
+                        <div style="color: #d97706; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">⚠️ Recruiter Assessment & Critique:</div>
+                        <div style="color: #475569; margin-bottom: 12px; font-size: 0.9rem; line-height: 1.5;">
+                            {critique.critique_weakness}
+                        </div>
+                        <div style="color: #059669; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">✅ Google XYZ Impact Formula Transformation:</div>
+                        <div style="background: #ecfdf5; border-left: 3px solid #059669; padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 0.93rem; font-weight: 600; color: #065f46;">
+                            {critique.rewritten_bullet_with_metrics}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                st.markdown("<hr style='border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;'>", unsafe_allow_html=True)
+
+                st.markdown('<h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Tailored Executive Summary</h3>', unsafe_allow_html=True)
+                st.info(suggestions.tailored_summary)
+
+                st.markdown('<h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Interview Talking Points</h3>', unsafe_allow_html=True)
+                for tp in suggestions.interview_talking_points:
+                    st.markdown(f"• 🗣️ **Interview Prep:** {tp}")
+
+                # Stretch Goal 3: Complete Tailored Resume Rewrite
+                st.markdown("<hr style='border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;'>", unsafe_allow_html=True)
+                st.markdown('<h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 6px;">ATS-Tailored Resume Generator</h3>', unsafe_allow_html=True)
+                st.caption("Generate a full-length ATS-optimized resume markdown document customized for this exact job description.")
+
+                if st.button("📄 Generate Full Tailored Resume Document", key="btn_gen_full_cv"):
+                    with st.spinner("Rewriting complete resume with verified ATS keywords..."):
+                        tailored_md = rewrite_tailored_resume(profile, selected_job)
+                        st.session_state.tailored_resume_content = tailored_md
+
+                if st.session_state.tailored_resume_content:
+                    col_t1, col_t2 = st.columns(2)
+                    with col_t1:
+                        st.markdown("#### 📄 Original Resume")
+                        st.text_area("Original Content", profile.to_search_text(), height=360, disabled=True)
+                    with col_t2:
+                        st.markdown("#### ✨ AI-Tailored Resume")
+                        st.text_area("Tailored Markdown", st.session_state.tailored_resume_content, height=360)
+
+                    st.download_button(
+                        label="💾 Download Tailored Resume (.md)",
+                        data=st.session_state.tailored_resume_content,
+                        file_name=f"tailored_resume_{selected_job.get('title', 'job').replace(' ', '_').lower()}.md",
+                        mime="text/markdown"
+                    )
 
 
-# ----------------------------------------------------
-# TAB 4: SMARTHIRE CO-PILOT AGENT (LIVE CONTEXT-AWARE CHAT)
-# ----------------------------------------------------
-with tab_agent:
-    st.markdown("### 🤖 SmartHire Co-Pilot Agent")
-    st.caption("Live conversational agent with full context awareness of your active resume, selected job, and career roadmaps.")
+# =====================================================================
+# 8. VIEW: 💬 CAREER MENTOR (CONVERSATIONAL AI AGENT)
+# =====================================================================
+elif st.session_state.active_tab == "Career Mentor":
+    # Top action bar matching reference app
+    col_t_left, col_t_right = st.columns([3, 2])
+    with col_t_left:
+        st.markdown(f"""
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 14px;">
+            <span style="font-size: 0.78rem; font-weight: 600; color: #475569; background: #ffffff; border: 1px solid #e2e8f0; padding: 4px 12px; border-radius: 8px;">
+                ↻ History ({len(st.session_state.mentor_chat_history)})
+            </span>
+            <span style="font-size: 0.78rem; font-weight: 600; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 4px 12px; border-radius: 8px;">
+                ● Memory Active
+            </span>
+            <span style="font-size: 0.78rem; font-weight: 600; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 4px 12px; border-radius: 8px;">
+                ● Database Synced
+            </span>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_t_right:
+        c_nw, c_clr = st.columns(2)
+        with c_nw:
+            if st.button("+ New Chat", use_container_width=True):
+                st.session_state.mentor_chat_history = [
+                    {
+                        "role": "assistant",
+                        "content": "Conversation memory reset. What's on your career agenda today?",
+                        "citations": []
+                    }
+                ]
+                st.rerun()
 
-    # Context Notification Pill
-    active_cand_summary = f"Candidate: {st.session_state.current_profile.name} ({st.session_state.current_profile.target_role})" if st.session_state.current_profile else "No resume loaded"
-    active_job_summary = f"Job: {st.session_state.selected_job.get('title', '')} @ {st.session_state.selected_job.get('company', '')}" if st.session_state.selected_job else "No target job chosen"
+    # Title matching reference app
+    st.markdown("""
+    <div style="text-align: center; margin-top: 10px; margin-bottom: 24px;">
+        <h1 style="font-size: 2.3rem; font-weight: 800; color: #0f172a; margin-bottom: 8px; letter-spacing: -0.02em;">
+            What's on the agenda today?
+        </h1>
+        <p style="font-size: 1.05rem; color: #64748b; max-width: 650px; margin: 0 auto;">
+            Ask anything freely about your career path, behavioral interviews, salary negotiation, or technical roadmaps.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Active Context Capsule
+    active_cand_str = st.session_state.current_profile.name if st.session_state.current_profile else "No resume loaded"
+    active_role_str = st.session_state.selected_job.get("title", "No target job chosen") if st.session_state.selected_job else "No target role chosen"
 
     st.markdown(f"""
-    <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 12px; padding: 10px 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-        <div>
-            <span style="font-size: 0.82rem; font-weight: 700; color: #a5b4fc; text-transform: uppercase;">ACTIVE AGENT CONTEXT:</span>&nbsp;
-            <span style="color: #f8fafc; font-size: 0.9rem;">{active_cand_summary} &nbsp;•&nbsp; {active_job_summary}</span>
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+        <div style="font-size: 0.85rem; color: #0f172a;">
+            <b style="color: #2563eb;">ACTIVE MENTOR CONTEXT:</b> &nbsp; Candidate: <b>{active_cand_str}</b> &nbsp;•&nbsp; Target Job: <b>{active_role_str}</b>
         </div>
-        <span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">Multi-Turn Memory Active</span>
+        <span style="font-size: 0.75rem; color: #059669; font-weight: 700; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 8px; border-radius: 9999px;">
+            Resume auto-linked via chat
+        </span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -862,96 +1322,94 @@ with tab_agent:
             st.markdown(msg["content"])
 
             if msg.get("citations"):
-                with st.expander("📚 Sources & References Cited", expanded=False):
+                with st.expander("📚 Verified Grounded Sources & Citations", expanded=False):
                     for c in msg["citations"]:
                         st.markdown(f"""
-                        <div class="citation-card">
+                        <div class="mentor-citation-box">
                             <b>• {c['title']}</b> ({c['source_type']})<br/>
-                            <span style="color: #94a3b8; font-size: 0.85rem;">"{c['snippet']}"</span>
+                            <span style="color: #64748b; font-size: 0.8rem;">"{c['snippet']}"</span>
                         </div>
                         """, unsafe_allow_html=True)
 
-    # Agent Quick Action Chips
-    st.markdown("**⚡ Instant Agent Actions:**")
-    col_a1, col_a2, col_a3, col_a4 = st.columns(4)
-    action_query = None
-    with col_a1:
-        if st.button("🎯 Audit My Missing Gaps", use_container_width=True):
-            action_query = "Based on my active resume and target role, what are the top 3 technical skill gaps I must close?"
-    with col_a2:
-        if st.button("🎙️ Generate Mock Interview", use_container_width=True):
-            action_query = "Act as the hiring manager for my selected job and ask me 3 challenging technical interview questions based on my resume."
-    with col_a3:
-        if st.button("📝 Elevator Pitch for Job", use_container_width=True):
-            action_query = "Write a compelling 60-second interview elevator pitch linking my background to the target job requirements."
-    with col_a4:
-        if st.button("🚀 30-Day Transition Roadmap", use_container_width=True):
-            action_query = "Give me a practical 30-day week-by-week learning roadmap to master the missing skills for this target role."
+    # Prompt Action Chips matching reference app
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.caption("Suggested discussion topics:")
+    col_sc1, col_sc2, col_sc3, col_sc4 = st.columns(4)
+    suggested_q = None
+
+    with col_sc1:
+        if st.button("🎯 Explain My Role Match", use_container_width=True):
+            suggested_q = "Explain my match score for my active job and what experience gives me the highest leverage."
+    with col_sc2:
+        if st.button("🔍 Top 3 Missing Skills", use_container_width=True):
+            suggested_q = "What are the top 3 critical skill gaps between my resume and target job that I should address first?"
+    with col_sc3:
+        if st.button("🎙️ Mock Interview Prep", use_container_width=True):
+            suggested_q = "Act as the hiring manager for my target job and ask me 3 tough behavioral and technical interview questions based on my background."
+    with col_sc4:
+        if st.button("🚀 30-Day Transition Plan", use_container_width=True):
+            suggested_q = "Create a structured 30-day learning roadmap to close the skill gap for my target job role."
 
     # Chat Input Box
-    user_query = st.chat_input("Message your SmartHire Co-Pilot Agent...")
-    query_to_run = user_query or action_query
+    user_message = st.chat_input("Ask anything freely about your career path, interviews, or roadmaps...")
+    query_to_run = user_message or suggested_q
 
     if query_to_run:
         st.session_state.mentor_chat_history.append({"role": "user", "content": query_to_run})
         with st.chat_message("user", avatar="🧑‍💻"):
             st.markdown(query_to_run)
 
-        # Build candidate and job contextual representations for RAG prompt
         cand_ctx = st.session_state.current_profile.to_search_text() if st.session_state.current_profile else "No resume loaded"
-        job_ctx = str(st.session_state.selected_job) if st.session_state.selected_job else "No target job selected"
+        job_ctx = str(st.session_state.selected_job) if st.session_state.selected_job else "No target job chosen"
 
         with st.chat_message("assistant", avatar="⚡"):
-            with st.spinner("SmartHire Agent analyzing context, career notes, and verified sources..."):
-                resp = answer_career_question(
+            with st.spinner("SmartHire Mentor referencing verified roadmaps and career history..."):
+                response = answer_career_question(
                     question=query_to_run,
                     chat_history=st.session_state.mentor_chat_history,
                     candidate_context=cand_ctx,
                     job_context=job_ctx
                 )
-                st.markdown(resp["answer"])
+                st.markdown(response["answer"])
 
-                if resp.get("citations"):
-                    with st.expander("📚 Sources & References Cited", expanded=False):
-                        for c in resp["citations"]:
+                if response.get("citations"):
+                    with st.expander("📚 Verified Grounded Sources & Citations", expanded=False):
+                        for c in response["citations"]:
                             st.markdown(f"""
-                            <div class="citation-card">
+                            <div class="mentor-citation-box">
                                 <b>• {c['title']}</b> ({c['source_type']})<br/>
-                                <span style="color: #94a3b8; font-size: 0.85rem;">"{c['snippet']}"</span>
+                                <span style="color: #64748b; font-size: 0.8rem;">"{c['snippet']}"</span>
                             </div>
                             """, unsafe_allow_html=True)
 
                 st.session_state.mentor_chat_history.append({
                     "role": "assistant",
-                    "content": resp["answer"],
-                    "citations": resp.get("citations", [])
+                    "content": response["answer"],
+                    "citations": response.get("citations", [])
                 })
 
-    c_rst1, c_rst2 = st.columns([1.5, 4])
-    with c_rst1:
-        if st.button("🗑️ Reset Agent Conversation", use_container_width=True):
-            st.session_state.mentor_chat_history = [
-                {
-                    "role": "assistant",
-                    "content": "Conversation memory reset. What would you like to explore next?",
-                    "citations": []
-                }
-            ]
-            st.rerun()
 
-
-# ----------------------------------------------------
-# TAB 5: MODEL COMPARISON LAB & SYSTEM EVALUATION
-# ----------------------------------------------------
-with tab_benchmark:
-    st.markdown("### 🔬 Stretch Goal 4: Dual-Model Embedding Benchmark Lab")
-    st.write("Compare high-dimensional semantic embeddings (Google Gemini text-embedding-004) against lexical keyword embeddings (TF-IDF).")
+# =====================================================================
+# 9. VIEW: 🔬 MODEL LAB (STRETCH GOAL 4 & EVALUATION)
+# =====================================================================
+elif st.session_state.active_tab == "Model Lab":
+    st.markdown("""
+    <div style="margin-bottom: 20px;">
+        <div style="font-size: 0.75rem; font-weight: 800; color: #2563eb; letter-spacing: 0.08em; text-transform: uppercase;">BENCHMARK & EVALUATION</div>
+        <h1 style="font-size: 2.1rem; font-weight: 800; color: #0f172a; margin-top: 4px; margin-bottom: 6px; letter-spacing: -0.02em;">
+            Dual-Model Embedding Benchmark Lab
+        </h1>
+        <p style="font-size: 1.05rem; color: #475569; margin: 0;">
+            Compare high-dimensional semantic vector embeddings (Google Gemini text-embedding-004) against lexical keyword representations (TF-IDF).
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     jobs_df = pd.read_csv(JOBS_DATA_PATH)
     job_dicts = jobs_df.to_dict(orient="records")
 
     sample_query = st.text_input(
-        "Candidate Query for Model Benchmark",
+        "Candidate Query for Embedding Comparison",
         value="Machine Learning Engineer skilled in PyTorch, deep learning, computer vision, and ML pipelines",
         help="Test how different embedding representations match job descriptions."
     )
@@ -968,7 +1426,7 @@ with tab_benchmark:
             with col_b3:
                 st.metric("Corpus Evaluated", f"{len(job_dicts)} jobs")
 
-            st.markdown("#### 📊 Side-by-Side Model Rankings")
+            st.markdown("<br>", unsafe_allow_html=True)
             col_m1, col_m2 = st.columns(2)
 
             with col_m1:
@@ -983,8 +1441,8 @@ with tab_benchmark:
 
             st.info(f"💡 **Analytical Insight:** {comparison['analytical_conclusion']}")
 
-    st.markdown("---")
-    st.markdown("### 📋 Capstone Evaluation Report (answer_quality.md)")
+    st.markdown("<hr style='border: none; border-top: 1px solid #e2e8f0; margin: 28px 0;'>", unsafe_allow_html=True)
+    st.markdown('### 📋 Capstone Evaluation Report (answer_quality.md)')
 
     eval_file = REPORTS_DIR / "answer_quality.md"
     if eval_file.exists():
