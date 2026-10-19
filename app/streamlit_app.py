@@ -523,8 +523,20 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
+    if has_resume:
+        st.markdown("<div style='height: 6px;'></div>", unsafe_allow_html=True)
+        if st.button("✕ Clear Active Resume", use_container_width=True, help="Clear candidate dossier"):
+            st.session_state.raw_profile = None
+            st.session_state.current_profile = None
+            st.session_state.matched_jobs = []
+            st.session_state.selected_job = None
+            st.session_state.cv_suggestions = None
+            st.session_state.tailored_resume_content = None
+            st.toast("Active resume cleared!")
+            st.rerun()
+
     # Privacy & Controls Expander
-    with st.expander("🛡️ Privacy & Demo Settings", expanded=False):
+    with st.expander("🛡️ Privacy & Settings", expanded=False):
         mask_pii = st.toggle(
             "Mask Contact PII",
             value=st.session_state.pii_masking_enabled,
@@ -553,67 +565,6 @@ with st.sidebar:
             if api_key_input:
                 os.environ["GEMINI_API_KEY"] = api_key_input
                 os.environ["GOOGLE_API_KEY"] = api_key_input
-                st.rerun()
-
-    # Quick Dossier Loaders in Sidebar
-    st.markdown('<div class="sidebar-section-title">TEST PROFILES</div>', unsafe_allow_html=True)
-    c_s1, c_s2 = st.columns(2)
-    with c_s1:
-        if st.button("📊 Alex (DS)", use_container_width=True):
-            path = PROJECT_ROOT / "data/resumes/resume_alex_data_scientist.pdf"
-            if path.exists():
-                text = load_document(path)
-                with st.spinner("Loading Alex Rivera..."):
-                    raw = parse_resume(text, model_name=model_choice)
-                    st.session_state.raw_profile = raw
-                    st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
-                    st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
-                    st.session_state.cv_suggestions = None
-                    st.session_state.tailored_resume_content = None
-                st.toast("Loaded Alex Rivera!")
-                st.rerun()
-
-        if st.button("🌐 Sarah (FS)", use_container_width=True):
-            path = PROJECT_ROOT / "data/resumes/resume_sarah_fullstack_developer.pdf"
-            if path.exists():
-                text = load_document(path)
-                with st.spinner("Loading Sarah Chen..."):
-                    raw = parse_resume(text, model_name=model_choice)
-                    st.session_state.raw_profile = raw
-                    st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
-                    st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
-                    st.session_state.cv_suggestions = None
-                    st.session_state.tailored_resume_content = None
-                st.toast("Loaded Sarah Chen!")
-                st.rerun()
-
-    with c_s2:
-        if st.button("☁️ Rahul (Dev)", use_container_width=True):
-            path = PROJECT_ROOT / "data/resumes/resume_rahul_devops_engineer.docx"
-            if path.exists():
-                text = load_document(path)
-                with st.spinner("Loading Rahul Verma..."):
-                    raw = parse_resume(text, model_name=model_choice)
-                    st.session_state.raw_profile = raw
-                    st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
-                    st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
-                    st.session_state.cv_suggestions = None
-                    st.session_state.tailored_resume_content = None
-                st.toast("Loaded Rahul Verma!")
-                st.rerun()
-
-        if st.button("📈 Priya (DA)", use_container_width=True):
-            path = PROJECT_ROOT / "data/resumes/resume_priya_fresher_analyst.pdf"
-            if path.exists():
-                text = load_document(path)
-                with st.spinner("Loading Priya Sharma..."):
-                    raw = parse_resume(text, model_name=model_choice)
-                    st.session_state.raw_profile = raw
-                    st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
-                    st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
-                    st.session_state.cv_suggestions = None
-                    st.session_state.tailored_resume_content = None
-                st.toast("Loaded Priya Sharma!")
                 st.rerun()
 
 
@@ -793,66 +744,7 @@ if st.session_state.active_tab == "Overview":
         if st.button("Open Resume Studio →", key="btn_open_studio", use_container_width=True):
             navigate_to("Resume Studio")
 
-    st.markdown("<br><hr style='border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;'>", unsafe_allow_html=True)
 
-    # Instant Dossier Demo Card
-    st.markdown("""
-    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-        <div style="font-size: 0.82rem; font-weight: 800; color: #2563eb; letter-spacing: 0.08em; text-transform: uppercase;">Instant Evaluation Demo</div>
-        <div style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-top: 4px; margin-bottom: 6px;">
-            Want to test the full pipeline in one click?
-        </div>
-        <div style="font-size: 0.88rem; color: #64748b; margin-bottom: 14px;">
-            Select a verified candidate profile below to populate structured skills, run FAISS semantic matching, and start career coaching immediately.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    cd1, cd2, cd3, cd4 = st.columns(4)
-    with cd1:
-        if st.button("📊 Load Alex (Data Scientist)", key="ov_alex", use_container_width=True):
-            path = PROJECT_ROOT / "data/resumes/resume_alex_data_scientist.pdf"
-            if path.exists():
-                text = load_document(path)
-                raw = parse_resume(text)
-                st.session_state.raw_profile = raw
-                st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
-                st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
-                st.toast("Loaded Alex Rivera!")
-                st.rerun()
-    with cd2:
-        if st.button("🌐 Load Sarah (Full Stack)", key="ov_sarah", use_container_width=True):
-            path = PROJECT_ROOT / "data/resumes/resume_sarah_fullstack_developer.pdf"
-            if path.exists():
-                text = load_document(path)
-                raw = parse_resume(text)
-                st.session_state.raw_profile = raw
-                st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
-                st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
-                st.toast("Loaded Sarah Chen!")
-                st.rerun()
-    with cd3:
-        if st.button("☁️ Load Rahul (DevOps)", key="ov_rahul", use_container_width=True):
-            path = PROJECT_ROOT / "data/resumes/resume_rahul_devops_engineer.docx"
-            if path.exists():
-                text = load_document(path)
-                raw = parse_resume(text)
-                st.session_state.raw_profile = raw
-                st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
-                st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
-                st.toast("Loaded Rahul Verma!")
-                st.rerun()
-    with cd4:
-        if st.button("📈 Load Priya (Junior Analyst)", key="ov_priya", use_container_width=True):
-            path = PROJECT_ROOT / "data/resumes/resume_priya_fresher_analyst.pdf"
-            if path.exists():
-                text = load_document(path)
-                raw = parse_resume(text)
-                st.session_state.raw_profile = raw
-                st.session_state.matched_jobs = search_jobs(raw.to_search_text(), top_k=TOP_K_JOBS)
-                st.session_state.selected_job = st.session_state.matched_jobs[0] if st.session_state.matched_jobs else None
-                st.toast("Loaded Priya Sharma!")
-                st.rerun()
 
 
 # =====================================================================
@@ -985,7 +877,7 @@ elif st.session_state.active_tab == "Profile":
             navigate_to("Jobs")
 
     else:
-        st.info("👈 Upload your resume above or select a sample candidate from the sidebar to inspect the extracted profile.")
+        st.info("Upload your professional resume above to inspect your verified competencies, experience history, and job matches.")
 
 
 # =====================================================================
